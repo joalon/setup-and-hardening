@@ -1,2 +1,15 @@
 ---
-# handlers file for setup-and-hardening
+
+- name: Update yum cache
+  yum:
+    update_cache: true
+
+- name: Restart rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+
+- name: Enable rsyslog
+  service:
+    name: rsyslog
+    enabled: true

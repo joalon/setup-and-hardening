@@ -1,0 +1,14 @@
+---
+
+- name: 1.1.1.1 Ensure mounting of cramfs filesystems is disabled
+  lineinfile:
+    path: /etc/modprobe.d/CIS.conf
+    line: 'install cramfs /bin/true'
+    state: present
+    create: true
+
+- name: 1.1.1.1 Ensure mounting of cramfs filesystems is disabled
+  modprobe:
+    name: cramfs
+    state: absent
+

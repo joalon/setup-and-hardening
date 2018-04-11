@@ -1,2 +1,11 @@
 ---
-# defaults file for setup-and-hardening
+
+hostname: host.example.com
+
+dns-zone-name: example.com
+dns-servers:
+   - 8.8.8.8
+   - 8.8.4.4
+
+syslog-server: 127.0.0.1
+syslog-port: 514

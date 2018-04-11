@@ -1,0 +1,26 @@
+---
+
+- name: 2.2.3 Ensure Avahi Server is not enabled
+  service:
+    name: avahi-daemon
+    state: stopped
+    enabled: false
+    
+- name: 2.2.4 Ensure CUPS is not enabled
+  service:
+    name: cups
+    state: stopped
+    enabled: false
+
+- name: 2.2.5 Ensure DHCP Server is not enabled
+  service:
+    name: dhcpd
+    state: stopped
+    enabled: false
+
+- name: 2.2.6 Ensure LDAP server is not enabled
+  service:
+    name: slapd
+    state: stopped
+    enabled: false
+

@@ -1,0 +1,37 @@
+---
+
+- name: Set hostname
+  hostname:
+    name: {{ hostname }}
+
+- name: Disable NetworkManager
+  service:
+    name: NetworkManager
+    state: stopped
+    enabled: false
+
+- name: Set DNS servers
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+  when: dns-servers is defined
+
+- name: Configure as syslog client
+  lineinfile:
+    path: /etc/rsyslog.conf
+    line: '*.*  @@{{syslog-server}}:{{syslog-port}}'
+    state: present
+  when: syslog-server is defined
+
+- name: Set up Yum repository
+  yum_repository:
+    name: {{ yum-repo-name }}
+    description: {{ yum-repo-description }}
+    baseurl: {{ yum-repo-url }}
+    gpgcheck: yes
+    gpgkey: file:///etc/pki/rpm-gpg/CentOS7-PublicGPGkey
+  notify: Update yum cache
+  when: yum-repo is defined
+
+# Configure:
+# - backup

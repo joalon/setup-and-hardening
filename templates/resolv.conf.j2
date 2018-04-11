@@ -1,0 +1,6 @@
+{% if dns-zone-name is defined %}
+    search {{dns-zone-name}}
+{% endif %}
+{% for server in dns-servers %}
+    {{server}}
+{% endfor %}
