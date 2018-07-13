@@ -52,6 +52,9 @@
   - Level 1 - Workstation
 
 
+## For error handling on non-scored items, could use failed_when or ignore_errors to just report the failure.
+
+
 # These could probably be done in a loop? Rebuild with these additional filesystems:
 #
 # squashfs
