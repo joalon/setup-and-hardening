@@ -1,0 +1,13 @@
+---
+
+- name: Hello!
+  debug:
+    msg: "hello!"
+
+## 5.1 Configure cron
+
+## 5.2 SSH Server Configuration
+
+## 5.3 Configure PAM
+
+## 5.4 User Accounts and Environment
