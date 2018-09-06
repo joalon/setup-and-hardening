@@ -1,10 +1,14 @@
 ---
 
-- name: Hello!
+- name: TODO message
   debug:
-    msg: "Hello!"
+    msg: "TODO: 4 - Audit"
 
 ## 4.1 Configure System Accounting (auditd)
 
 ## 4.1.1 Configure Data Retention
 
+## 4.2 Configure Logging
+
+
+## 4.2 Ensure logrotate is configured

@@ -9,3 +9,5 @@ dns-servers:
 
 syslog-server: 127.0.0.1
 syslog-port: 514
+
+cis_sysctl_conf_path: /etc/sysctl.d/cis.conf

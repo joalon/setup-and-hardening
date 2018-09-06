@@ -3,8 +3,20 @@
 - include_tasks: host-setup.yml
 
 - include_tasks: hardening/1-Filesystems.yml
+
 - include_tasks: hardening/2-Services.yml
+  tags:
+    - Level 1 - Server
+    - Level 1 - Workstation
+
 - include_tasks: hardening/3-Network.yml
+  tags:
+  - Level 1 - Server
+  - Level 1 - Workstation
+
 - include_tasks: hardening/4-Audit.yml
+
 - include_tasks: hardening/5-Access.yml
+
 - include_tasks: hardening/6-Maintenance.yml
+

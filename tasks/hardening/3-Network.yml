@@ -1,41 +1,212 @@
 ---
 
-- name: Hello!
-  debug:
-    msg: "Hello world!"
-
 ## 3.1 Network Parameters (Host Only)
 
-# 3.1.1 Ensure IP forwarding is disabled
+- name: 3.1.1 Ensure IP forwarding is disabled
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
 
-# 3.1.2 Ensure packet redirect sending is disabled
+- name: 3.1.2 Ensure packet redirect sending is disabled
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.send_redirects
+    - net.ipv4.conf.default.send_redirects
 
 ## 3.2 Network Parameters (Host and Router)
-# 3.2.1 Ensure source routed packets are not accepted
 
-# 3.2.2 Ensure ICMP redirects are not accepted
+- name: 3.2.1 Ensure source routed packets are not accepted
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.accept_source_route
+    - net.ipv4.conf.default.accept_source_route
 
-# 3.2.3 Ensure secure ICMP redirects are not accepted
+- name:  3.2.2 Ensure ICMP redirects are not accepted
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.accept_redirects
+    - net.ipv4.conf.default.accept_redirects
 
-# 3.2.4 Ensure suspicious packets are logged
+- name:  3.2.3 Ensure secure ICMP redirects are not accepted
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.secure_redirects
+    - net.ipv4.conf.default.secure_redirects
 
-# 3.2.5 Ensure broadcast ICMP requests are ignored
+- name:  3.2.4 Ensure suspicious packets are logged
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.log_martians
+    - net.ipv4.conf.default.log_martians
 
-# 3.2.6 Ensure bogus ICMP responses are ignored
+- name:  3.2.5 Ensure broadcast ICMP requests are ignored
+  sysctl:
+    name: net.ipv4.icmp_echo_ignore_broadcasts
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
 
-# 3.2.7 Ensure Reverse Path Filtering is enabled
+- name:  3.2.6 Ensure bogus ICMP responses are ignored
+  sysctl:
+    name: net.ipv4.icmp_ignore_bogus_error_responses
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
 
-# 3.2.8 Ensure TCP SYN Cookies is enabled
+- name:  3.2.7 Ensure Reverse Path Filtering is enabled
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.conf.default.rp_filter
+
+- name:  3.2.8 Ensure TCP SYN Cookies is enabled
+  sysctl:
+    name: net.ipv4.tcp_syncookies
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
 
 ## 3.3 IPv6 (If enabled use these, otherwise disable totally)
 
+- name:  3.3.1 Ensure IPv6 router advertisements are not accepted
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv6.conf.all.accept_ra
+    - net.ipv6.conf.default.accept_ra
+
+- name:  3.3.2 Ensure IPv6 redirects are not accepted
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop:
+    - net.ipv6.conf.all.accept_redirects
+    - net.ipv6.conf.default.accept_redirects
+
+# 3.3.3 Ensure IPv6 is disabled (Not Scored) 
+
 ## 3.4 TCP Wrappers
-# 3.4.1 Ensure TCP Wrappers is installed
+
+- name: 3.4.1 Ensure TCP Wrappers is installed
+  yum:
+    pkg: tcp_wrappers 
+    state: present
 
 # 3.4.2 Ensure /etc/hosts.allow is configured
+- name: 3.4.2 Ensure /etc/hosts.allow is configured
+  debug:
+    msg: TODO
 
 # 3.4.3 Ensure /etc/hosts.deny is configured
+- name: 3.4.2 Ensure /etc/hosts.allow is configured
+  debug:
+    msg: TODO
 
-# 3.4.4 Ensure permissions on /etc/hosts.allow are configured
+- stat:
+    path: "/etc/hosts.allow"
+  register: allow
+- name: 3.4.4 Ensure permissions on /etc/hosts.allow are configured
+  file:
+    path: /etc/hosts.allow
+    owner: root
+    group: root
+    mode: 0644
+    state : '{{ "file" if  allow.stat.exists else "touch" }}'
+
+- stat:
+    path: "/etc/hosts.deny"
+  register: deny
+- name: 3.4.5 Ensure permissions on /etc/hosts.deny are configured 
+  file:
+    path: /etc/hosts.deny
+    owner: root
+    group: root
+    mode: 0644
+    state : '{{ "file" if  deny.stat.exists else "touch" }}'
 
 ## 3.5 Uncommon Network Protocols
+
+- name: 3.5.1 Ensure DCCP is disabled
+  kernel_blacklist:
+    name: dccp
+    state: absent
+
+- name: 3.5.2 Ensure SCTP is disabled
+  kernel_blacklist:
+    name: sctp
+    state: absent
+
+- name: 3.5.3 Ensure RDS is disabled
+  kernel_blacklist:
+    name: rds
+    state: absent
+
+- name: 3.5.4 Ensure TIPC is disabled
+  kernel_blacklist:
+    name: tipc
+    state: absent
+  
+
+## 3.6 Firewall Configuration
+- name: TODO - Implement firewalling.
+  debug:
+    msg: Firewall not implemented!
+
+# 3.6.1 Ensure iptables is installed
+
+# 3.6.2 Ensure default deny firewall policy
+
+# 3.6.3 Ensure loopback traffic is configured
+
+# 3.6.4 Ensure outbound and established connections are configured
+
+# 3.6.5 Ensure firewall rules exist for all open ports
+
+## 3.7 Ensure wireless interfaces are disabled
+# turn off all wireless interfaces: ip link set <interface> down 
+# tags:
+#  - Level 1 - Server
+#  - Level 2 - Workstation
